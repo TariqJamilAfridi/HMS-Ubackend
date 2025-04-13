@@ -20,9 +20,11 @@ app.use(
     cors({
         origin: [process.env.FRONTEND_URL, process.env.DASHBOARD_URL],
         methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true,
+        credentials: true, // Important to include cookies if needed
+        allowedHeaders: ["Content-Type", "Authorization"], // Ensure headers are allowed
     })
 );
+
 // The above lines can saw that we can successfully connect the FRONT_END to the BACK_END just we can check by sending some request 
 
 // The below all we can saw that it is the middle layers
