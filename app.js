@@ -18,10 +18,10 @@ config({ path: "./config/config.env" }); // Ensure your .env file path is correc
 // here we can saw that this is a middle ware in order to connect the FRONT_END
 app.use(
     cors({
-        origin: [process.env.FRONTEND_URL, process.env.DASHBOARD_URL],
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true, // Important to include cookies if needed
-        allowedHeaders: ["Content-Type", "Authorization"], // Ensure headers are allowed
+      origin: [process.env.FRONTEND_URL, process.env.DASHBOARD_URL],
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Add OPTIONS
+      credentials: true,
+      exposedHeaders: ["Content-Type", "Authorization"], // Explicitly expose headers
     })
 );
 
