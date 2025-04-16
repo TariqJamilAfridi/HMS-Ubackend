@@ -29,7 +29,20 @@ const allowedOrigins = [
   "https://hms-udaskboardtja.vercel.app"
 ];
 
+// 🟢 Step 1: Middleware to handle CORS
 app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
+
+// ✅ Step 2: Handle preflight (OPTIONS) requests
+app.options('*', cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
