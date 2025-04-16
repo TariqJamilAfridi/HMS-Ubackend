@@ -1,6 +1,7 @@
 import express from "express";
 import { config } from "dotenv";
 import cors from "cors";
+// const cors = require(cors);
 import cookieParser from "cookie-parser";
 import { dbConnection } from "./database/dbConnection.js";
 import fileUpload from 'express-fileupload';
