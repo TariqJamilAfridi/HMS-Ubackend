@@ -19,33 +19,27 @@ config({ path: "./config/config.env" }); // Ensure your .env file path is correc
 // At the very top of your middleware chain
 // Replace cors() with this manual implementation
 // Manual CORS handler (MUST be first middleware)
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    'https://hms-ufrontedtjaa.vercel.app',
-    'https://hms-udaskboardtja.vercel.app'  // Updated dashboard URL
-  ];
-  
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Expose-Headers', 'Content-Type, Authorization, X-Total-Count');
-  
-  if (req.method === 'OPTIONS') {
-    return res.status(204).end();
-  }
-  next();
-});
+
 
 // Backup CORS config
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.DASHBOARD_URL,
+  "https://hms-ufrontedtjaa.vercel.app",
+  "https://hms-udaskboardtja.vercel.app"
+];
+
 app.use(cors({
-  origin: [process.env.FRONTEND_URL, process.env.DASHBOARD_URL],
-  credentials: true,
-  exposedHeaders: ['Content-Type', 'Authorization', 'X-Total-Count']
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
 }));
+
 
 // The above lines can saw that we can successfully connect the FRONT_END to the BACK_END just we can check by sending some request 
 
