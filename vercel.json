@@ -6,14 +6,6 @@
   }],
   "routes": [{
     "src": "/api/(.*)",
-    "dest": "app.js",
-    "headers": {
-      "Access-Control-Allow-Origin": "https://hms-ufrontedtjaa.vercel.app https://hms-udaskboardtja.vercel.app",
-      "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
-      "Access-Control-Expose-Headers": "Content-Type, Authorization, X-Total-Count",
-      "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
-    }
+    "dest": "app.js"
   }]
 }

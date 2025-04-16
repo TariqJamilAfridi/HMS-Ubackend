@@ -21,7 +21,7 @@ config({ path: "./config/config.env" }); // Ensure your .env file path is correc
 // Manual CORS handler (MUST be first middleware)
 
 
-// Backup CORS config
+// 🟢 Replace existing CORS config with this:
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   process.env.DASHBOARD_URL,
@@ -29,17 +29,15 @@ const allowedOrigins = [
   "https://hms-udaskboardtja.vercel.app"
 ];
 
-// 🟢 Step 1: Middleware to handle CORS
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  exposedHeaders: ['Content-Type', 'Authorization']
 }));
+
+
 
 // ✅ Step 2: Handle preflight (OPTIONS) requests
 app.options('*', cors({
