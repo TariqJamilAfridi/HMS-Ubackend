@@ -17,7 +17,7 @@ config({ path: "./config/config.env" });
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   process.env.DASHBOARD_URL,
-  "https://hms-ufrontedtjaa.vercel.app", // Add more allowed origins if needed
+  "https://hms-ufrontedwtj.vercel.app", // Add more allowed origins if needed
   "https://hms-udaskboardtja.vercel.app",
 ];
 
