@@ -64,9 +64,15 @@ const appointmentSchema = new mongoose.Schema({
         type :  Boolean,
         default:false,
     },
-    doctorId:{
-        type : mongoose.Schema.ObjectId,
-        required: true,
+    doctorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
+    patientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     status: {
         type: String,

@@ -1,16 +1,28 @@
-export const generateToken =(user, message, statuscode, res)=>{
+export const generateToken = (user, message, statusCode, res) => {
     const token = user.generateJsonWebToken();
     const cookieName = user.role === "Admin" ? "adminToken" : "patientToken";
-    res.status(statuscode).cookie(cookieName, token, {
-        expires : new Date(Date.now()+ process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),httpOnly: true,
-        secure: true,
-        sameSite: "None"
-    }).json({
-        success: true,
-        message,
-        user,
-        token,
+    
+    // Default to 15 days if COOKIE_EXPIRE is missing
+    const expiresInDays = process.env.COOKIE_EXPIRE || 15;
+    const expires = new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000);
 
-    });
+    // Secure should be true only in production
+    const secureFlag = process.env.NODE_ENV === "production";
 
+    res.status(statusCode)
+       .cookie(cookieName, token, {
+           expires,
+           httpOnly: true,
+           secure: secureFlag,
+           sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax"
+       })
+       .json({
+           success: true,
+           message,
+           user: {
+               _id: user._id,
+               email: user.email,
+               role: user.role
+           }
+       });
 };

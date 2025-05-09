@@ -5,8 +5,12 @@ import { catchAsyncErrors} from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/errorMiddleware.js";
 import { Appointment } from "../models/appointmentSchema.js";
 import { User } from "../models/userSchema.js";
+// import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
+// import ErrorHandler from "../middlewares/errorMiddleware.js";
+// import { Appointment } from "../models/appointmentSchema.js";
+// import { User } from "../models/userSchema.js";
 
-export const postAppointment = catchAsyncErrors(async(req, res, next)=>{
+export const postAppointment = catchAsyncErrors(async (req, res, next) => {
     const {
         firstName,
         lastName,
@@ -22,36 +26,30 @@ export const postAppointment = catchAsyncErrors(async(req, res, next)=>{
         hasVisited,
         address,
     } = req.body;
-    if (
-        !firstName ||
-        !lastName ||
-        !email ||
-        !phone ||
-        !nic ||
-        !dob ||
-        !gender ||
-        !appointment_date ||
-        !department ||
-        !doctor_firstName ||
-        !doctor_lastName ||
-        !address
-    ){
-        return next(new ErrorHandler("Please Fill Full Form"),400)
+
+    // Validate all required fields
+    if (!firstName || !lastName || !email || !phone || !nic || !dob || 
+        !gender || !appointment_date || !department || !doctor_firstName || 
+        !doctor_lastName || !address) {
+        return next(new ErrorHandler("Please fill all required fields", 400));
     }
-    const isConflict= await User.find({
-        firstName:doctor_firstName,
-        lastName:doctor_lastName,
-        role:"Doctor",
+
+    // Verify doctor exists
+    const doctors = await User.find({
+        firstName: doctor_firstName,
+        lastName: doctor_lastName,
+        role: "Doctor",
         doctorDepartment: department,
     });
-    if (isConflict.length === 0){
-        return next(new ErrorHandler("Doctor not found",404));
+
+    if (doctors.length === 0) {
+        return next(new ErrorHandler("Doctor not found", 404));
     }
-    if (isConflict.length>1){
-        return next(new ErrorHandler("Doctors Conflict! Please Through Email or Phone ")),404
+    if (doctors.length > 1) {
+        return next(new ErrorHandler("Multiple doctors found - please contact clinic", 400));
     }
-    const doctorId = isConflict[0]._id;
-    const patientId = req.user._id;
+
+    // Create appointment
     const appointment = await Appointment.create({
         firstName,
         lastName,
@@ -62,28 +60,41 @@ export const postAppointment = catchAsyncErrors(async(req, res, next)=>{
         gender,
         appointment_date,
         department,
-        doctor :{
+        doctor: {
             firstName: doctor_firstName,
             lastName: doctor_lastName,
         },
         hasVisited,
         address,
-        doctorId,
-        patientId
+        doctorId: doctors[0]._id,
+        patientId: req.user._id // Now safe with authentication middleware
     });
-    res.status(200).json({
+
+    res.status(201).json({
         success: true,
-        message: "Appoint Sent Successfully",
+        message: "Appointment booked successfully",
         appointment,
-    })
+    });
 });
 
-export const getAllAppointment = catchAsyncErrors(async(req,res,next)=>{
-    const appointment = await Appointment.find();
-    res.status(200).json({
-        success : true,
-        appointment,
+// Other controller functions remain same...
+export const getAllAppointments = catchAsyncErrors(async (req, res, next) => {
+  const appointments = await Appointment.find()
+    .populate({
+      path: "doctorId",
+      select: "firstName lastName",
+      model: "User"
+    })
+    .populate({
+      path: "patientId",
+      select: "firstName lastName",
+      model: "User"
     });
+
+  res.status(200).json({
+    success: true,
+    appointments
+  });
 });
 
 export const updateAppointmentStatus = catchAsyncErrors(async(req,res,next)=>{

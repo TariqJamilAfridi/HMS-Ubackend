@@ -62,17 +62,12 @@ const userSchema = new mongoose.Schema({
 });
 
 // Pre-save middleware for password hashing
+// models/userSchema.js
 userSchema.pre("save", async function (next) {
-    // Only hash the password if it has been modified (or is new)
-    if (!this.isModified("password")) {
-        return next();
-    }
-
-    // Hash the password with a salt round of 10
+    if (!this.isModified("password")) return next();
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });
-
 // Method to compare passwords
 userSchema.methods.comparePassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
